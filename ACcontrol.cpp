@@ -67,8 +67,9 @@ void updateRegulator() {
 	regulator *= 5;
 }
 
-void updateThrottle() {
+void updateSpeed() {
 	static int8_t previousSpeed;
+
 	updateRegulator();
 
 	if( regulator < speed ) speed--; // throttle level follows reverser with a delay
@@ -81,12 +82,12 @@ void updateThrottle() {
 	
 
 // STATE FUNCTIONS
-stateFunction(movingLeft) {
+stateFunction(moving) {
 	entryState {
 		throttleT = 0; // ensure this timer is 0, shoudln't be needed
 	}
 	onState {
-		repeat( &throttleT, updateInterval, updateThrottle );
+		repeat( &throttleT, updateInterval, updateSpeed );
 
 		if( speed == 0 ) exitFlag = true; 
 	}
@@ -96,20 +97,6 @@ stateFunction(movingLeft) {
 	}
 }
 
-stateFunction(movingRight) {
-	entryState {
-		throttleT = 0; // ensure this timer is 0, shoudln't be needed
-	}
-	onState {
-		repeat( &throttleT, updateInterval, updateThrottle );
-
-		if( speed == 0 ) exitFlag = true; 
-	}
-	exitState {
-
-		return true;
-	}
-}
 
 stateFunction(stationairy) {
 	static uint8_t oldDirection = LEFT;
@@ -118,17 +105,17 @@ stateFunction(stationairy) {
 		newDirection = NEUTRAL;
 	}
 	onState {
-		repeat( &ACcontrolT, 10, updateRegulator );
+		repeat( &throttleT, 10, updateRegulator );
 
-		if( regulator < -10 ) newDirection = LEFT; // throttle must be alteast -10 or 10
-		if( regulator >  10 ) newDirection = RIGHT;
+		if( regulator <= -10 ) newDirection = LEFT; // throttle must be alteast -10 or 10
+		if( regulator >=  10 ) newDirection = RIGHT;
 		
 		if( newDirection != NEUTRAL ) {
 			if( newDirection != oldDirection ) digitalWrite( directionRelay, HIGH ); // apply 24V when direction has changed
-			if( !throttleT ) exitFlag = true; // if time has expired -> exit
+			if( !ACcontrolT ) exitFlag = true; // if time has expired -> exit
 		}
 		else {
-			throttleT = 30; // force this timer at 300ms when no direction is picked
+			ACcontrolT = 30; // force this timer at 300ms when no direction is picked
 		}
 	}
 	exitState {
@@ -142,15 +129,11 @@ stateFunction(stationairy) {
 extern bool ACcontrol(void) {
 	STATE_MACHINE_BEGIN
 
-	State(movingLeft) {
-		nextState(stationairy, 100); }
-
-	State(movingRight) {
+	State(moving) {
 		nextState(stationairy, 100); }
 
 	State(stationairy) {
-		if( newDirection == LEFT )	nextState(movingLeft, 100);		// 1 second delay
-		else						nextState(movingRight, 100); }	// 1 second delay
+		nextState(moving, 100); }
 
 	STATE_MACHINE_END
 }

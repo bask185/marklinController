@@ -3,8 +3,7 @@
 
 enum ACcontrolStates {
 	ACcontrolIDLE,
-	movingLeft,
-	movingRight,
+	moving,
 	stationairy };
 
 extern bool ACcontrol(void); 
