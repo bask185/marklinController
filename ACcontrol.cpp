@@ -82,12 +82,7 @@ stateFunction(movingLeft) {
 		throttleT = 0; // ensure this timer is 0, shoudln't be needed
 	}
 	onState {
-		//repeat( &throttleT, updateInterval, updateThrottle );
-		if( !throttleT ) { 
-			throttleT = updateInterval;
-			updateThrottle();
-		}
-
+		repeat( &throttleT, updateInterval, updateThrottle );
 
 		if( speed == 0 ) exitFlag = true; 
 	}
@@ -102,11 +97,7 @@ stateFunction(movingRight) {
 		throttleT = 0; // ensure this timer is 0, shoudln't be needed
 	}
 	onState {
-		//repeat( &throttleT, updateInterval, updateThrottle );
-		if( !throttleT ) { 
-			throttleT = updateInterval;
-			updateThrottle();
-		}
+		repeat( &throttleT, updateInterval, updateThrottle );
 
 		if( speed == 0 ) exitFlag = true; 
 	}
