@@ -38,7 +38,7 @@ enum directions {
 static unsigned char state = beginState;
 static bool enabled = true, runOnce = true, exitFlag = false;
 
-int8_t speed; // reverser is the inp
+int8_t speed, regulator; // reverser is the inp
 uint8_t newDirection;
 
 
@@ -62,10 +62,14 @@ static void nextState(unsigned char _state, unsigned char _interval) {
 	state = _state;
 }
 
+void updateRegulator() {
+	regulator = map( analogRead( reverserPin ), 0 , 1023, -20, 20); 
+	regulator *= 5;
+}
+
 void updateThrottle() {
 	static int8_t previousSpeed;
-	int8_t regulator = map( analogRead( reverserPin ), 0 , 1023, -20, 20); 
-	regulator *= 5; // 20 speed steps per direction
+	updateRegulator();
 
 	if( regulator < speed ) speed--; // throttle level follows reverser with a delay
 	if( regulator > speed ) speed++;
@@ -114,12 +118,7 @@ stateFunction(stationairy) {
 		newDirection = NEUTRAL;
 	}
 	onState {
-		int8_t regulator;
-
-		if( !ACcontrolT ) { // monitor the regulator input every 100ms to see if we are going to move.
-			ACcontrolT = 10;
-			regulator = map( analogRead( reverserPin ), 0 , 1023, -20, 20); 
-		}
+		repeat( &ACcontrolT, 10, updateRegulator );
 
 		if( regulator < -10 ) newDirection = LEFT; // throttle must be alteast -10 or 10
 		if( regulator >  10 ) newDirection = RIGHT;
