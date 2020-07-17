@@ -5,11 +5,16 @@
 #include "src/basics/timers.h"
 
 #define maximumCurrent 160
+
+
+#define ON	1
+#define OFF	0
+
 void shortCircuit() {
 	static uint8_t pulseCounter;
 
 	if( (!rebootT) && regelaar.isOff() ) {
-		regelaar.turn( regelaar.ON );
+		regelaar.turn( ON );
 	}
 
 
@@ -23,7 +28,7 @@ void shortCircuit() {
 			if( pulseCounter > 10 ) { 				// if 10 x 5ms = 50ms short circuit is detected, deactivate power to track
 				pulseCounter = 0;
 
-				regelaar.turn( regelaar.OFF );				// disable weistra control
+				regelaar.turn( OFF );				// disable weistra control
 				rebootT = 100; 						// 10 SECONDS RETRY
 			}
 		}

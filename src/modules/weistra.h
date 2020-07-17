@@ -9,8 +9,6 @@ public:
     void turn( uint8_t );
     uint8_t isOn();
     uint8_t isOff();
-    const int ON = 1;
-    const int OFF = 0;
 
 private:
     unsigned int  intervalTime;
@@ -19,5 +17,7 @@ private:
     unsigned char state;
 
     volatile uint8_t *portx_p;
+    const int ON = 1;
+    const int OFF = 0;
 };
 

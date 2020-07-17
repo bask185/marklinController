@@ -28,6 +28,7 @@ const int updateInterval = 10; // 100ms
 
 Weistra regelaar( throttlePin );
 
+
 enum directions {
 	NEUTRAL,
 	LEFT,
@@ -95,7 +96,7 @@ stateFunction(moving) {
 
 stateFunction(stationairy) {
 	static uint8_t oldDirection = LEFT;
-	uint8_t = newDirection = NEUTRAL;
+	uint8_t newDirection = NEUTRAL;
 	
 	entryState {
 	}
