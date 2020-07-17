@@ -39,10 +39,6 @@ static unsigned char state = beginState;
 static bool enabled = true, runOnce = true, exitFlag = false;
 
 int8_t speed, regulator; // reverser is the inp
-uint8_t newDirection;
-
-
-
 
 
 // FUNCTIONS
@@ -50,8 +46,7 @@ extern void ACcontrolInit(void) {
 	state = beginState;
 	regelaar.begin();
 }
-extern byte ACcontrolGetState(void) { return state;}
-extern void ACcontrolSetState(unsigned char _state) { state = _state; runOnce = true; }
+
 static void nextState(unsigned char _state, unsigned char _interval) {
 	runOnce = true;
 	exitFlag = false;
@@ -87,8 +82,8 @@ stateFunction(moving) {
 		throttleT = 0; // ensure this timer is 0, shoudln't be needed
 	}
 	onState {
-		repeat( &throttleT, updateInterval, updateSpeed );
-
+		repeat( &throttleT, updateInterval, updateSpeed );	// this function is always atlease called once before the speed is examined
+															// the speed will therefor never be 0 when this function is called the first time
 		if( speed == 0 ) exitFlag = true; 
 	}
 	exitState {
@@ -100,9 +95,9 @@ stateFunction(moving) {
 
 stateFunction(stationairy) {
 	static uint8_t oldDirection = LEFT;
+	uint8_t = newDirection = NEUTRAL;
 	
 	entryState {
-		newDirection = NEUTRAL;
 	}
 	onState {
 		repeat( &throttleT, 10, updateRegulator );
@@ -115,7 +110,7 @@ stateFunction(stationairy) {
 			if( !ACcontrolT ) exitFlag = true; // if time has expired -> exit
 		}
 		else {
-			ACcontrolT = 30; // force this timer at 300ms when no direction is picked
+			ACcontrolT = 30; // force this timer at 300ms when no direction is picked, this time will be used to keep the 24V applied.
 		}
 	}
 	exitState {

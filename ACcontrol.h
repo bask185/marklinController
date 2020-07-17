@@ -8,7 +8,5 @@ enum ACcontrolStates {
 
 extern bool ACcontrol(void); 
 extern void ACcontrolInit();
-extern void ACcontrolSetState(unsigned char);
-extern unsigned char ACcontrolGetState(void);
 
 extern Weistra regelaar;
