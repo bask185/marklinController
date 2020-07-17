@@ -1,0 +1,4 @@
+13	throttlePin	OUTPUT
+12	directionRelay	OUTPUT
+A0	reverserPin	INPUT
+A1	currentPin	INPUT
